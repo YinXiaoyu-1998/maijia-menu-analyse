@@ -1,6 +1,14 @@
 # maijia-menu-analyse
 
-Codex skill for exporting menu cost/gross-profit data from Meituan POS and generating a Maijia-style menu analysis workbook.
+Agent Skill for exporting menu cost/gross-profit data from Meituan POS and generating a Maijia-style menu analysis workbook.
+
+The installable skill lives at:
+
+```text
+skills/maijia-menu-analyse/
+```
+
+That directory is the portable unit: its root contains `SKILL.md`, plus the script files the agent can use.
 
 It is intended for prompts such as:
 
@@ -19,15 +27,96 @@ It does not invent missing 5A dimensions such as ingredient category, flavor typ
 
 ## Install
 
-Clone this repository, then copy the skill folder into your Codex skills directory:
+Clone this repository first:
 
 ```bash
 git clone https://github.com/YinXiaoyu-1998/maijia-menu-analyse.git
+```
+
+Then install the `skills/maijia-menu-analyse` folder into the skills directory used by your agent.
+
+### OpenClaw
+
+```bash
+openclaw skills install ./maijia-menu-analyse/skills/maijia-menu-analyse --global
+openclaw skills check
+```
+
+To install for one configured OpenClaw agent instead of globally:
+
+```bash
+openclaw skills install ./maijia-menu-analyse/skills/maijia-menu-analyse --agent <agent-id>
+```
+
+### Claude Code
+
+Personal install:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R maijia-menu-analyse/skills/maijia-menu-analyse ~/.claude/skills/
+```
+
+Project install:
+
+```bash
+mkdir -p .claude/skills
+cp -R maijia-menu-analyse/skills/maijia-menu-analyse .claude/skills/
+```
+
+### Cursor
+
+User-level install:
+
+```bash
+mkdir -p ~/.cursor/skills
+cp -R maijia-menu-analyse/skills/maijia-menu-analyse ~/.cursor/skills/
+```
+
+Project-level install:
+
+```bash
+mkdir -p .cursor/skills
+cp -R maijia-menu-analyse/skills/maijia-menu-analyse .cursor/skills/
+```
+
+### Codex
+
+```bash
 mkdir -p ~/.codex/skills
 cp -R maijia-menu-analyse/skills/maijia-menu-analyse ~/.codex/skills/
 ```
 
-Restart Codex or refresh the skills list after installing.
+For other agents, copy `skills/maijia-menu-analyse` into the agent's configured skills directory, preserving this structure:
+
+```text
+maijia-menu-analyse/
+├── SKILL.md
+├── agents/
+│   └── openai.yaml
+└── scripts/
+    └── generate_menu_report.py
+```
+
+Restart or refresh the agent's skills list after installing if the agent does not hot-reload skills.
+
+## Compatibility
+
+This is a standard `SKILL.md`-based Agent Skill package. It is not limited to Codex.
+
+- Anthropic describes Agent Skills as an open standard and notes that the same format can work across tools that adopt it.
+- Claude Code supports skills stored at `~/.claude/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`.
+- OpenClaw supports installing a local skill directory whose root contains `SKILL.md`.
+- Cursor supports Agent Skills in the editor and CLI, with skills defined in `SKILL.md` files.
+
+Agent implementations still differ in their exact install paths, available browser automation tools, and Python/runtime setup. The workbook generator itself is a plain Python script, so it can also be run manually from any checkout.
+
+References:
+
+- Anthropic Skills overview: https://support.claude.com/en/articles/12512176-what-are-skills
+- Claude Code Skills docs: https://docs.claude.com/en/docs/claude-code/skills
+- OpenClaw skills CLI docs: https://docs.openclaw.ai/cli/skills
+- Cursor 2.4 changelog: https://cursor.com/changelog/2-4
 
 ## Requirements
 
@@ -38,7 +127,7 @@ Restart Codex or refresh the skills list after installing.
 ## Generate From An Existing Export
 
 ```bash
-python3 ~/.codex/skills/maijia-menu-analyse/scripts/generate_menu_report.py \
+python3 /path/to/maijia-menu-analyse/scripts/generate_menu_report.py \
   --input /path/to/成本毛利表.xlsx \
   --output /path/to/documents/菜单分析报告.xlsx
 ```

@@ -42,13 +42,13 @@ python3 /path/to/maijia-menu-analyse/scripts/generate_menu_report.py \
   --title "永杰厚道 菜单分析报告"
 ```
 
-Prefer the bundled Codex Python runtime when available:
+Prefer the agent's bundled Python runtime when available. Otherwise use `python3`:
 
 ```bash
-$CODEX_BUNDLED_PYTHON scripts/generate_menu_report.py --input ... --output ...
+python3 scripts/generate_menu_report.py --input ... --output ...
 ```
 
-If `CODEX_BUNDLED_PYTHON` is not set, use the Python from `codex_app.load_workspace_dependencies`.
+Make sure `openpyxl` is installed in whichever Python runtime is used.
 
 ## Output Structure
 
