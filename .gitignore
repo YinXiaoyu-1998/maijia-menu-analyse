@@ -1,0 +1,14 @@
+.DS_Store
+.codex_tmp/
+__pycache__/
+*.pyc
+.venv/
+venv/
+documents/
+*.xlsx
+*.xls
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.mp4
