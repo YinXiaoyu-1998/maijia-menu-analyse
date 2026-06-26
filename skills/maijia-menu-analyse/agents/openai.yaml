@@ -1,7 +1,7 @@
 interface:
   display_name: "Maijia Menu Analyse"
-  short_description: "Export Meituan menu data and report"
-  default_prompt: "Use $maijia-menu-analyse for /maijia-menu-analysis 帮我分析过去三个月的菜单，生成 5A 报告。"
+  short_description: "美团自助菜品取数、菜品穿透与菜单分析"
+  default_prompt: "Use $maijia-menu-analyse to fetch Meituan 自助菜品取数 data or generate a Maijia menu analysis workbook."
 
 policy:
   allow_implicit_invocation: true

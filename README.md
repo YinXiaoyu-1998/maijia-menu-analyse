@@ -1,6 +1,6 @@
 # maijia-menu-analyse
 
-Agent Skill for exporting menu cost/gross-profit data from Meituan POS and generating a Maijia-style menu analysis workbook.
+Agent Skill for exporting complete dish/menu data from Meituan POS and generating Maijia-style menu analysis outputs when the source fields support them.
 
 The installable skill lives at:
 
@@ -14,6 +14,9 @@ It is intended for prompts such as:
 
 ```text
 /maijia-menu-analysis 帮我分析过去三个月的菜单，生成 5A 报告。
+帮我去美团自助菜品取数下载完整菜品信息，文件名保存为 maijia_dishes.xlsx。
+帮我导出最新菜品库，用基础分类做档口映射。
+基于菜品主题数据帮我做菜品穿透分析。
 ```
 
 The skill automates the workflow from Meituan POS report export to a workbook with these available dimensions:
@@ -122,7 +125,35 @@ References:
 
 - A Meituan POS account already logged in through Chrome when browser export is needed.
 - Python 3 with `openpyxl` for local workbook generation.
-- A Meituan exported `.xlsx` from `报表中心 -> 菜品报表 -> 菜品成本毛利统计`.
+- A Meituan exported `.xlsx` from `报表中心 -> 自助取数 -> 自助菜品取数` for complete dish-level data.
+- A Meituan exported `.xlsx` from `运营中心 -> 菜品管理 -> 菜品库 -> 菜品导出 -> 导出菜品基础信息` when stall/档口 mapping is needed. In this workflow, `档口 = 基础分类`.
+- A Meituan exported `.xlsx` from `报表中心 -> 菜品报表 -> 菜品成本毛利统计` only when generating the legacy cost/gross-profit workbook.
+
+## Fetch Complete Dish Data
+
+Use Chrome with an already logged-in Meituan session:
+
+1. Open `https://pos.meituan.com/web/report/main#/rms-report/home`.
+2. Go to `自助取数 -> 自助菜品取数`.
+3. Set the date range, expand filters, and select all field groups.
+4. Query, export, go to `下载清单记录`, and click the matching row's far-right `下载`.
+5. Save under `documents/`, for example `documents/maijia_dishes.xlsx`.
+
+The export usually has two metadata rows before the real header: row 1 is the title, row 2 is the filter description, row 3 is the actual header row.
+
+## Fetch Dish Catalog / Stall Mapping
+
+Use this when a report needs stall/档口 attribution:
+
+1. Open `https://pos.meituan.com/web/operation/main#/` or click `运营中心`.
+2. Go to `菜品管理 -> 菜品库`.
+3. Select the target brand, usually `麦家小馆`.
+4. Click `菜品导出`.
+5. Choose `导出菜品基础信息`.
+6. Select `全部字段`.
+7. Confirm and save under `documents/`, for example `documents/maijia_dish_catalog.xlsx`.
+
+The catalog usually contains `总部菜品` and `总部套餐`. Use `总部菜品.基础分类` as the stall/档口 dimension; keep `打印出品档口` and `出品部门` as kitchen-routing fields unless the user asks for that view.
 
 ## Generate From An Existing Export
 
