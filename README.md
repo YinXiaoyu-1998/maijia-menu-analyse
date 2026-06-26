@@ -1,6 +1,6 @@
 # maijia-menu-analyse
 
-Agent Skill for exporting complete dish/menu data from Meituan POS and generating Maijia-style menu analysis outputs when the source fields support them.
+Agent Skill for exporting complete dish/menu data from Meituan POS and preparing Maijia-style dish and stall attribution inputs when the source fields support them.
 
 The installable skill lives at:
 
@@ -14,7 +14,7 @@ It is intended for prompts such as:
 
 ```text
 /maijia-menu-analysis 帮我分析过去三个月的菜单，生成 5A 报告。
-帮我去美团自助菜品取数下载完整菜品信息，文件名保存为 maijia_dishes.xlsx。
+帮我去美团自助菜品取数下载完整菜品信息，文件名按规范保存为 maijia_dishes_YYYYMMDD_YYYYMMDD.xlsx。
 帮我导出最新菜品库，用基础分类做档口映射。
 基于菜品主题数据帮我做菜品穿透分析。
 ```
@@ -124,10 +124,20 @@ References:
 ## Requirements
 
 - A Meituan POS account already logged in through Chrome when browser export is needed.
-- Python 3 with `openpyxl` for local workbook generation.
+- Python 3 with `openpyxl` for local workbook validation and analysis.
 - A Meituan exported `.xlsx` from `报表中心 -> 自助取数 -> 自助菜品取数` for complete dish-level data.
 - A Meituan exported `.xlsx` from `运营中心 -> 菜品管理 -> 菜品库 -> 菜品导出 -> 导出菜品基础信息` when stall/档口 mapping is needed. In this workflow, `档口 = 基础分类`.
-- A Meituan exported `.xlsx` from `报表中心 -> 菜品报表 -> 菜品成本毛利统计` only when generating the legacy cost/gross-profit workbook.
+
+## Raw Export Naming
+
+Save all raw downloaded files under `documents/raw_exports/`:
+
+| Export | File name |
+|---|---|
+| `自助菜品取数` / `菜品主题数据` | `maijia_dishes_YYYYMMDD_YYYYMMDD.xlsx` |
+| `菜品库` / `导出菜品基础信息` | `maijia_dish_catalog_YYYYMMDD.xlsx` |
+
+For split downloads, append `_part01`, `_part02`, etc. before `.xlsx`.
 
 ## Fetch Complete Dish Data
 
@@ -137,7 +147,7 @@ Use Chrome with an already logged-in Meituan session:
 2. Go to `自助取数 -> 自助菜品取数`.
 3. Set the date range, expand filters, and select all field groups.
 4. Query, export, go to `下载清单记录`, and click the matching row's far-right `下载`.
-5. Save under `documents/`, for example `documents/maijia_dishes.xlsx`.
+5. Save under `documents/raw_exports/`, for example `documents/raw_exports/maijia_dishes_20260614_20260620.xlsx`.
 
 The export usually has two metadata rows before the real header: row 1 is the title, row 2 is the filter description, row 3 is the actual header row.
 
@@ -151,35 +161,13 @@ Use this when a report needs stall/档口 attribution:
 4. Click `菜品导出`.
 5. Choose `导出菜品基础信息`.
 6. Select `全部字段`.
-7. Confirm and save under `documents/`, for example `documents/maijia_dish_catalog.xlsx`.
+7. Confirm and save under `documents/raw_exports/`, for example `documents/raw_exports/maijia_dish_catalog_20260626.xlsx`.
 
 The catalog usually contains `总部菜品` and `总部套餐`. Use `总部菜品.基础分类` as the stall/档口 dimension; keep `打印出品档口` and `出品部门` as kitchen-routing fields unless the user asks for that view.
 
-## Generate From An Existing Export
+## Analysis Outputs
 
-```bash
-python3 /path/to/maijia-menu-analyse/scripts/generate_menu_report.py \
-  --input /path/to/成本毛利表.xlsx \
-  --output /path/to/documents/菜单分析报告.xlsx
-```
-
-The script creates the output folder when it does not already exist.
-
-## Expected Source Columns
-
-The Meituan export must contain:
-
-- `品项名称`
-- `品项类型`
-- `菜品编码`
-- `单位`
-- `销售数量`
-- `销售收入(元)`
-- `折后均价(元)`
-- `菜品预估成本(元)`
-- `折后毛利(元)`
-- `折后毛利率`
-- `优惠金额(元)`
+Use `自助菜品取数` as the dated dish-sales fact table and `菜品库` as the dish dimension table. Typical outputs include dish sales ranking, store-week stall contribution using `基础分类`, and dish/stall同比 or 环比 attribution.
 
 ## License
 
